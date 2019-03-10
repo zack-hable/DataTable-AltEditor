@@ -424,7 +424,7 @@
                 data += "<form name='altEditor-form' role='form'>";
                 for (var j in columnDefs) {
                     if (columnDefs[j].type.includes("hidden")) {
-                        data += "<input type='hidden' id='" + columnDefs[j].title + "' value='" + adata.data()[0][columnDefs[j].name] + "'></input>";
+                        data += "<input type='hidden' id='" + columnDefs[j].name + "' value='" + adata.data()[0][columnDefs[j].name] + "'></input>";
                     }
                     else {
                         data += "<div style='margin-left: initial;margin-right: initial;' class='form-group row'><label for='"
@@ -432,7 +432,7 @@
                             + "'>"
                             + columnDefs[j].title
                             + " :  </label><input  type='hidden'  id='"
-                            + that._quoteattr(columnDefs[j].title)
+                            + that._quoteattr(columnDefs[j].name)
                             + "' name='"
                             + that._quoteattr(columnDefs[j].title)
                             + "' placeholder='"
@@ -462,18 +462,20 @@
                 var that = this;
                 var dt = this.s.dt;
 
-                var jsonDataArray = {};
+                //var jsonDataArray = {};
 
                 var adata = dt.rows({
                     selected: true
                 });
 
-                // Getting the IDs and Values of the tablerow
-                for (var i = 0; i < dt.context[0].aoColumns.length; i++) {
-                    jsonDataArray[dt.context[0].aoColumns[i].id] = adata.data()[0][dt.context[0].aoColumns[i].data];
-                }
+                var rowDataArray = {};
 
-                that.onDeleteRow(jsonDataArray, function (info) {
+                // Getting the inputs from the modal
+                $('form[name="altEditor-form"] *').filter(':input').each(function (i) {
+                    rowDataArray[$(this).attr('id')] = $(this).val();
+                });
+
+                that.onDeleteRow(rowDataArray, function (info) {
                     that._updateTableCallback(info, dt);
                 });
             },
